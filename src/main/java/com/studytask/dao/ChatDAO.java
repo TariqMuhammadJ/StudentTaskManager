@@ -8,7 +8,7 @@ import com.studytask.util.ConnectionPool;
 
 public class ChatDAO {
 
-    public void sendMessage(String message, int sender_id, int sent_to_id) throws DAOException {
+    public static void sendMessage(String message, int sender_id, int sent_to_id) throws DAOException {
         String sql = "INSERT INTO Chats (chat_text, sender_id, sent_to_id) VALUES(?, ?, ?)";
         try (Connection conn = ConnectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {

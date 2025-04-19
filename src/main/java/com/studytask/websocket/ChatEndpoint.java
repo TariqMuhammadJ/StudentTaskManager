@@ -18,11 +18,6 @@ import jakarta.websocket.server.ServerEndpoint;
 @ServerEndpoint("/chat/{userId}/{targetId}")
 public class ChatEndpoint {
     private static final Map<Integer, Session> userSessions = new ConcurrentHashMap<>();
-    private final ChatDAO chatDao;
-    
-    public ChatEndpoint(ChatDAO chatDao) {
-    	this.chatDao = chatDao;
-    }
 
     @OnOpen
     public void onOpen(Session session, @PathParam("userId") int userId){
@@ -47,14 +42,14 @@ public class ChatEndpoint {
     	if (targetSession != null && targetSession.isOpen()) {
     		try {
     			targetSession.getBasicRemote().sendText(message);
-    			chatDao.sendMessage(message, senderId, targetId);
+    			ChatDAO.sendMessage(message, senderId, targetId);
     			
     		} catch (IOException e) {
     			e.printStackTrace();
     		}
     	}
     	else {
-    		chatDao.sendMessage(message, senderId, targetId);
+    		ChatDAO.sendMessage(message, senderId, targetId);
     	}
     	
     }

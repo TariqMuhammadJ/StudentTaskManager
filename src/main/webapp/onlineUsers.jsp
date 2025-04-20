@@ -128,7 +128,8 @@
     <div class="navigation">
         <a href="groups.jsp">Groups</a> |
         <a href="profile.jsp">Profile</a> |
-        <a href="index.jsp">Logout</a> |
+        <a href="#" onClick="document.getElementById('logoutform').submit(); return false;">Logout</a>
+        <form id="logoutform" action="logout" method="post" style="display:none;"></form>
     </div>
 </div>
 <script type="module" src="./JS/chat.js"></script>

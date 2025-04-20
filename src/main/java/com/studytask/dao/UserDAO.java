@@ -45,22 +45,28 @@ public class UserDAO extends GenericDAO<User> {
     }
 
 
-    public List<User> findLoggedInUsers() throws DAOException {
+    public List<User> findLoggedInUsers(int currentUserId) throws DAOException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM Users WHERE isActive = true";
+        String sql = "SELECT * FROM Users WHERE isActive = true AND id <> ?";
+
         try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                users.add(mapResultSetToUser(rs));
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, currentUserId); // Set the parameter
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    users.add(mapResultSetToUser(rs));
+                }
             }
+
             return users;
-    
+
         } catch (SQLException e) {
             throw new DAOException("Error fetching online users", e);
         }
     }
+
     
     @Override
     public void save(User user) throws DAOException {
@@ -160,9 +166,6 @@ public class UserDAO extends GenericDAO<User> {
             throw new DAOException("Error updating status", e);
         }
     }
-
-
-
 
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();

@@ -30,27 +30,41 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         try {
+            // Check if a valid user session already exists
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                @SuppressWarnings("unchecked")
+                Optional<User> existingUser = (Optional<User>) session.getAttribute("user");
+                if (existingUser != null && existingUser.isPresent()) {
+                    // User already logged in
+                    response.sendRedirect("tasks.jsp");
+                    return;
+                }
+            }
+
+            // Handle login
             String username = request.getParameter("username");
             String password = request.getParameter("password");
-    
+
             Optional<User> user = userService.login(username, password);
-            if (user.isPresent()){
-                HttpSession session = request.getSession(true);
-                session.setAttribute("user", user);
-                session.setMaxInactiveInterval(1800);
-        
+            if (user.isPresent()) {
+                // Create new session
+                HttpSession newSession = request.getSession(true);
+                newSession.setAttribute("user", user);
+                newSession.setMaxInactiveInterval(1800); // 30 minutes
+
                 System.out.println("Logged in: " + username);
-                response.sendRedirect("tasks");
-                System.out.println("User successfully logged in");
-            }
-            else {
-                request.setAttribute("Error", "Invalid Username or password");
+                response.sendRedirect("tasks.jsp");
+            } else {
+                request.setAttribute("Error", "Invalid username or password");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }
+
         } catch (Exception e) {
             System.err.println("Login error: " + e.getMessage());
             request.setAttribute("error", "Login failed.");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
+
 }

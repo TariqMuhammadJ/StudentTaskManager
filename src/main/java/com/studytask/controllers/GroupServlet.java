@@ -130,11 +130,13 @@ public class GroupServlet extends HttpServlet {
         
         try {
             // Get the current user from session
-            HttpSession session = request.getSession();
-            Optional<User> currentUser = (Optional<User>) session.getAttribute("user");
-            
+            HttpSession session = request.getSession(false);         
             Group newGroup = new Group(name.trim());
             groupService.createGroup(newGroup);
+            
+            // this needs a-lot of working - over here
+            // add the members and ensure the group exists - with the correct login member
+            // notify the members that you have been added to a group
             
             // Add only the specified members
             if (membersStr != null && !membersStr.trim().isEmpty()) {

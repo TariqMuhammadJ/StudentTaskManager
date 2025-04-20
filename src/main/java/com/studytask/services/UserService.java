@@ -68,9 +68,9 @@ public class UserService {
     }
     
 
-    public List<User> getOnlineUsers() throws ServiceException{
+    public List<User> getOnlineUsers(int UserId) throws ServiceException{
         try{
-            return userDAO.findLoggedInUsers();
+            return userDAO.findLoggedInUsers(UserId);
         } catch(DAOException e){
             throw new ServiceException("Failed to retrieve Online Users", e);
         }
@@ -82,6 +82,20 @@ public class UserService {
         } catch (DAOException e) {
             throw new ServiceException("Failed to retrieve user", e);
         }
+    }
+	public void updateIsDisactive(Optional<User> user) throws DAOException{
+    	String sql = "UPDATE Users SET isActive = ? WHERE id =  ?";
+    	try (Connection conn = ConnectionPool.getConnection()){
+    		PreparedStatement stmt = conn.prepareStatement(sql);
+    		stmt.setBoolean(1, user.get().getIsActive());
+    		stmt.setInt(2, user.get().getId());
+    		stmt.executeUpdate();
+    		
+    		
+    		
+    	} catch (SQLException e) {
+    		throw new DAOException("Error updating status", e);
+    	}
     }
 
     public void updateUser(User user) throws ServiceException {

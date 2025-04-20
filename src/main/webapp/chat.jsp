@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, java.time.*" %>
 <%
-    String userId = request.getParameter("userId");
+    String userId = request.getParameter("targetid");
     // Simulate fetching a username (replace with real DB logic if needed)
     String username = "User " + userId;
 
@@ -103,7 +103,7 @@
     </form>
 
     <div class="back">
-        <a href="onlineUsers">← Back to Online Users</a>
+        <a href="onlineUsers" id="back">← Back to Online Users</a>
     </div>
 </div>
 

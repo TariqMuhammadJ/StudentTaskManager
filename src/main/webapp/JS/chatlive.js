@@ -7,10 +7,14 @@ const params = new URLSearchParams(window.location.search);
 const userId = params.get("userId");
 const targetId = params.get("targetid");
 const messages = document.querySelector(".messages");
-const Socket = new WebSocket(`ws://localhost:8080/StudyTask/chat/${userId}/${targetId}`)
+const Socket = new WebSocket(`wss://basilisk-comic-wrongly.ngrok-free.app/StudyTask/chat/${userId}/${targetId}`)
 const messageFrom = document.getElementById("message-form");
 
 document.addEventListener("DOMContentLoaded", () => {
+	Socket.onopen = () => {
+	    console.log("WebSocket connection created" + userId);
+	};
+
 
     const fetchMessages = () => {
         fetch(`/StudyTask/allChats?userId=${userId}&targetId=${targetId}`)
@@ -69,10 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-Socket.onopen = ()=> {
-	console.log("Web socket connection created");
-	
-}
 
 messageFrom.addEventListener("submit", function(event){
 	event.preventDefault();
@@ -96,4 +96,16 @@ Socket.onmessage = function(event){
 	newMessage.textContent = event.data;
 	messages.append(newMessage);
 	messages.scrollTop = messages.scrollHeight;
+}
+
+
+const backButton = document.getElementById("back");
+
+if (backButton) {
+    backButton.addEventListener("click", function (e) {
+        if (Socket && Socket.readyState === WebSocket.OPEN) {
+            console.log("Closing WebSocket connection before navigating back...");
+            Socket.close(); // Close the socket
+        }
+    });
 }

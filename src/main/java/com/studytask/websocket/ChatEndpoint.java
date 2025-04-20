@@ -2,6 +2,7 @@ package com.studytask.websocket;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.studytask.dao.ChatDAO;
@@ -17,40 +18,49 @@ import jakarta.websocket.server.ServerEndpoint;
 
 @ServerEndpoint("/chat/{userId}/{targetId}")
 public class ChatEndpoint {
-    private static final Map<Integer, Session> userSessions = new ConcurrentHashMap<>();
+	private static final Map<Integer, Set<Session>> userSessions = new ConcurrentHashMap<>();
 
-    @OnOpen
-    public void onOpen(Session session, @PathParam("userId") int userId){
-        userSessions.put(userId, session);
-        System.out.println("user" + userId + "Connected");
-        System.out.println("User session " + userSessions.get(userId));
-    }
-    
-    @OnClose
-    public void onClose(Session session) {
-    	userSessions.values().removeIf(sess -> sess.getId().equals(session.getId()));
-    	System.out.println("Disconnected from" + session.getId());
-    	
-    }
+
+	@OnOpen
+	public void onOpen(Session session, @PathParam("userId") int userId) {
+	    userSessions.computeIfAbsent(userId, k -> ConcurrentHashMap.newKeySet()).add(session);
+	    System.out.println("User " + userId + " connected. Total sessions: " + userSessions.get(userId).size());
+	}
 
     
-    @OnMessage
-    public void onMessage(String message, Session session, @PathParam("userId") int senderId, @PathParam("targetId") int targetId) throws DAOException {
-    	System.out.println("Message received : " + senderId + ": " + message);
-    	Session targetSession = userSessions.get(targetId);
-    	
-    	if (targetSession != null && targetSession.isOpen()) {
-    		try {
-    			targetSession.getBasicRemote().sendText(message);
-    			ChatDAO.sendMessage(message, senderId, targetId);
-    			
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
-    	}
-    	else {
-    		ChatDAO.sendMessage(message, senderId, targetId);
-    	}
-    	
-    }
+	@OnClose
+	public void onClose(Session session) {
+	    userSessions.forEach((userId, sessions) -> {
+	        sessions.removeIf(sess -> sess.getId().equals(session.getId()));
+	    });
+	    System.out.println("Disconnected from session: " + session.getId());
+	}
+
+
+    
+	@OnMessage
+	public void onMessage(String message, Session session, 
+	                      @PathParam("userId") int senderId, 
+	                      @PathParam("targetId") int targetId) throws DAOException {
+	    
+	    System.out.println("Message received: " + senderId + " -> " + targetId + ": " + message);
+	    
+	    // Save message
+	    ChatDAO.sendMessage(message, senderId, targetId);
+
+	    // Broadcast to all target user sessions
+	    Set<Session> targetSessions = userSessions.get(targetId);
+	    if (targetSessions != null) {
+	        for (Session targetSession : targetSessions) {
+	            if (targetSession.isOpen()) {
+	                try {
+	                    targetSession.getBasicRemote().sendText(message);
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        }
+	    }
+	}
+
 }

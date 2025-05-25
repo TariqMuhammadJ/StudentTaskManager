@@ -38,14 +38,6 @@ public class LogoutServlet extends HttpServlet {
 		HttpSession session = Req.getSession(false);
 		if (session != null) {
 			Optional<User> user = (Optional<User>) session.getAttribute("user");
-			user.get().setIsActive(false);
-			user.get().setId(user.get().getId());
-			try {
-				userservice.updateIsDisactive(user);
-			} catch (DAOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			System.out.println("User has successfully been logged out" + user.get().getId());
 			session.invalidate();
 		}

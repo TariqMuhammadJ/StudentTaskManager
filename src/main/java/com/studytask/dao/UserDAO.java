@@ -11,9 +11,10 @@ import java.util.Optional;
 
 import com.studytask.exceptions.DAOException;
 import com.studytask.models.User;
+import com.studytask.services.ServiceFactory;
+import com.studytask.services.UserService;
 
 public class UserDAO extends GenericDAO<User> {
-
     @Override
     public Optional<User> findById(int id) throws DAOException {
         String sql = "SELECT * FROM Users WHERE id = ?";
@@ -140,9 +141,6 @@ public class UserDAO extends GenericDAO<User> {
             try (ResultSet rs = stmt.executeQuery()) {
                 if(rs.next()){
                     User user = mapResultSetToUser(rs);
-                    user.setIsActive(true);
-                    updateIsActiveDB(user);
-                    System.out.println("User successfully updated");
                     return Optional.of(user);
                 }
                 else{
@@ -155,17 +153,7 @@ public class UserDAO extends GenericDAO<User> {
         }
     }
 
-    private void updateIsActiveDB(User user) throws DAOException{
-        String sql = "UPDATE Users SET isActive = ? WHERE id = ?";
-        try (Connection conn = getConnection()){
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            stmt.setBoolean(1, user.getIsActive());
-            stmt.setInt(2, user.getId());
-            stmt.executeUpdate();
-        } catch (SQLException e){
-            throw new DAOException("Error updating status", e);
-        }
-    }
+   
 
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();

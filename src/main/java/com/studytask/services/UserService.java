@@ -25,7 +25,7 @@ public class UserService {
                 User user = userOpt.get();
                 if (user.getPassword().equals(password)) {
                     user.setIsActive(true);
-                    updateIsActiveDB(user);
+                    updateIsActive(userOpt);
                     return Optional.of(user);
                 }
             }
@@ -35,7 +35,11 @@ public class UserService {
         }
     }
     
-    private void updateIsActiveDB(User user) throws DAOException{
+    public void updateIsActive(Optional<User> userOpt) throws DAOException{
+    	if(userOpt.isEmpty()) {
+    		throw new DAOException("User not found : Cannot update status");
+    	}
+    	User user = userOpt.get();
         String sql = "UPDATE Users SET isActive = ? WHERE id = ?";
         try (Connection conn = ConnectionPool.getConnection()){
             PreparedStatement stmt = conn.prepareStatement(sql);
@@ -82,20 +86,6 @@ public class UserService {
         } catch (DAOException e) {
             throw new ServiceException("Failed to retrieve user", e);
         }
-    }
-	public void updateIsDisactive(Optional<User> user) throws DAOException{
-    	String sql = "UPDATE Users SET isActive = ? WHERE id =  ?";
-    	try (Connection conn = ConnectionPool.getConnection()){
-    		PreparedStatement stmt = conn.prepareStatement(sql);
-    		stmt.setBoolean(1, user.get().getIsActive());
-    		stmt.setInt(2, user.get().getId());
-    		stmt.executeUpdate();
-    		
-    		
-    		
-    	} catch (SQLException e) {
-    		throw new DAOException("Error updating status", e);
-    	}
     }
 
     public void updateUser(User user) throws ServiceException {

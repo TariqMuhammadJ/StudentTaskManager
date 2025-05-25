@@ -1,6 +1,7 @@
 package com.studytask.controllers;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.studytask.models.User;
@@ -51,7 +52,8 @@ public class LoginServlet extends HttpServlet {
                 // Create new session
                 HttpSession newSession = request.getSession(true);
                 newSession.setAttribute("user", user);
-                newSession.setMaxInactiveInterval(1800); // 30 minutes
+                newSession.setAttribute("logintime", LocalDateTime.now());
+                newSession.setMaxInactiveInterval(30*60); // 30 minutes
 
                 System.out.println("Logged in: " + username);
                 response.sendRedirect("tasks.jsp");

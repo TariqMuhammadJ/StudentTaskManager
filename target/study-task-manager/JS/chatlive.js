@@ -7,7 +7,7 @@ const params = new URLSearchParams(window.location.search);
 const userId = params.get("userId");
 const targetId = params.get("targetid");
 const messages = document.querySelector(".messages");
-const Socket = new WebSocket(`wss://basilisk-comic-wrongly.ngrok-free.app/StudyTask/chat/${userId}/${targetId}`)
+const Socket = new WebSocket(`wss://localhost:8080/StudyTask/chat/${userId}/${targetId}`)
 const messageFrom = document.getElementById("message-form");
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const fetchMessages = () => {
-        fetch(`/StudyTask/allChats?userId=${userId}&targetId=${targetId}`)
+        fetch(`http://localhost:8080/StudyTask/allChats?userId=${userId}&targetId=${targetId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch messages");

@@ -7,7 +7,7 @@ const params = new URLSearchParams(window.location.search);
 const userId = params.get("userId");
 const targetId = params.get("targetid");
 const messages = document.querySelector(".messages");
-const Socket = new WebSocket(`wss://localhost:8080/StudyTask/chat/${userId}/${targetId}`)
+const Socket = new WebSocket(`ws://localhost:8080/StudyTask/chat/${userId}/${targetId}`)
 const messageFrom = document.getElementById("message-form");
 
 document.addEventListener("DOMContentLoaded", () => {

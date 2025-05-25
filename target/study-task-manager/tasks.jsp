@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Tasks - StudyTask</title>
     <style>
         body {
@@ -18,6 +19,31 @@
             background: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        .header{
+        	display:flex;
+        	justify-content:space-between;
+        	align-items:center;
+        }
+        
+        .notifications{
+        
+        		margin-bottom: 20px;
+            	padding-bottom: 10px;
+        }
+        
+        .notifications > i{
+        font-size:2vw;
+        margin: 0 2vw 0 2vw;
+        color:green;
+        
+        
+        }
+        
+        .notifications > ul{
+        	display:none;	
+        
+        }
+        
         h1, h2 {
             color: #333;
             text-align: center;
@@ -113,6 +139,7 @@
 </head>
 <body>
     <div class="container">
+        <div class="header">
         <div class="user-info">
             <%@ page import="java.time.ZonedDateTime, java.time.format.DateTimeFormatter" %>
             <% 
@@ -121,7 +148,15 @@
             %>
             <p>Current Date and Time (UTC): <%= formattedDate %></p>
         </div>
-
+        <div class="notifications">
+        	<i class="fas fa-bell"></i>
+        	<ul>
+        		<li> </li>
+        	
+        	</ul>  
+        </div>
+        
+        </div>
         <div class="task-form">
             <h2>Add New Task</h2>
             <form action="tasks" method="post">
@@ -180,7 +215,8 @@
         <div class="nav-links">
             <a href="profile.jsp">Profile</a>
             <a href="groups.jsp">Groups</a>
-            <a href="logout">Logout</a>
+            <a href="#" onClick="document.getElementById('logoutform').submit(); return false;">Logout</a>
+            <form id="logoutform" action="logout" method="post" style="display:none;"></form>
             <a href="onlineUsers">Online</a>
         </div>
     </div>

@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, java.time.*" %>
 <%
-    String userId = request.getParameter("userId");
+    String userId = request.getParameter("targetid");
     // Simulate fetching a username (replace with real DB logic if needed)
     String username = "User " + userId;
 
@@ -96,18 +96,18 @@
         <div class="message you">This is your message</div>
     </div>
 
-    <form method="post" action="chat.jsp">
+    <form id="message-form">
         <input type="hidden" name="userId" value="<%= userId %>" />
-        <input type="text" name="message" placeholder="Type your message..." required />
+        <input type="text" id="message"  placeholder="Type your message..." required />
         <button type="submit" id="chat-send">Send</button>
     </form>
 
     <div class="back">
-        <a href="onlineUsers">← Back to Online Users</a>
+        <a href="onlineUsers" id="back">← Back to Online Users</a>
     </div>
 </div>
 
-<script src="./JS/chat.js"></script>
+<script type="module"  src="./JS/chatlive.js"></script>
 
 </body>
 </html>

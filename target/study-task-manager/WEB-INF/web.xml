@@ -5,6 +5,8 @@
          version="5.0">
 
     <display-name>Study Task Manager</display-name>
+    
+    
 
     <!-- Session Configuration -->
 	<session-config>
@@ -15,8 +17,9 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-
-
+    <listener>
+	    <listener-class>com.studytask.listeners.DatabaseContextListener</listener-class>
+	</listener>
 
     <!-- Error Pages -->
     <error-page>

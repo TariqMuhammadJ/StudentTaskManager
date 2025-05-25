@@ -105,7 +105,7 @@
         <h1>StudyTask</h1>
         
         <c:choose>
-            <c:when test="${not empty sessionScope.user}">
+            <c:when test="${not empty sessionScope.op}">
                 <div class="description">
                     <p>Welcome back, ${sessionScope.user.login}!</p>
                 </div>

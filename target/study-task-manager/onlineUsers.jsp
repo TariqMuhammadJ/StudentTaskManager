@@ -1,6 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="java.time.ZonedDateTime, java.time.format.DateTimeFormatter" %>
+<%@ page import="java.util.Optional" %>
+<%@ page import="com.studytask.models.User" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,8 +82,17 @@
 <%
     ZonedDateTime now = ZonedDateTime.now();
     String formattedDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    int UserID = (int) session.getAttribute("userId");
-    System.out.println(UserID);
+    //int UserID = (int) session.getAttribute("userId");
+    Optional<User> userOpt = (Optional<User>) session.getAttribute("user");
+    int userID = -1;
+    if (userOpt.isPresent()) {
+        User user = userOpt.get();
+        System.out.println("Username: " + user.getLogin());
+        System.out.println("UserID: " + user.getId());// Or whatever fields you have
+        userID = user.getId();
+    }
+    
+
 %>
 <div class="container">
     <div class="datetime-info">
@@ -90,7 +101,7 @@
 
     <h1>Online Users</h1>
 
-    <div class="user-list">
+    <div class="user-list" id="user-parent" data-parent-id="<%=userID%>">
         <c:choose>
             <c:when test="${empty onlineUsers}">
                 <div class="no-users">
@@ -99,10 +110,10 @@
             </c:when>
             <c:otherwise>
                 <c:forEach var="user" items="${onlineUsers}">
-                    <div class="user-item" id="user-parent" data-parent-id="${sessionScope.userID}">
+                    <div class="user-item">
                         <h3>
                             ${user.login}
-                            <a id="online-user" data-user-id="${user.id}" href="chat.jsp?userId=${user.id}" title="Chat with ${user.login}" class="chat-icon">💬</a>
+                            <a data-user-id="${user.id}" href="chat.jsp?userId=<%=userID%>&targetid=${user.id}" title="Chat with ${user.login}" class="chat-icon">💬</a>
                         </h3>
                         <p>User ID: ${user.id}</p>
                         <p>Status: <span style="color: green;">Online</span></p>
@@ -117,8 +128,10 @@
     <div class="navigation">
         <a href="groups.jsp">Groups</a> |
         <a href="profile.jsp">Profile</a> |
-        <a href="index.jsp">Logout</a> |
+        <a href="#" onClick="document.getElementById('logoutform').submit(); return false;">Logout</a>
+        <form id="logoutform" action="logout" method="post" style="display:none;"></form>
     </div>
 </div>
+<script type="module" src="./JS/chat.js"></script>
 </body>
 </html>
